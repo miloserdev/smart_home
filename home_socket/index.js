@@ -5,14 +5,13 @@
 	const Xross = require("xross");
 	const app = Xross({ body_parser: true, debug: true });
 	
+	const WebSocket = require("ws");
+	var websocket = null;
+
 	const http = require("http");
 	const host = "localhost";
 	const port = 8092;
 	const home = "./www/";
-
-
-	const WebSocket = require("ws");
-	var websocket = null;
 
 
 
@@ -84,7 +83,8 @@
 				_ret["value"] = body || "dead";
 			}
 
-			console.log("_ret", _ret);	
+			console.log("_ret", _ret);
+			broadcast({ update: _ret });
 			
 			res.setHeader('Content-Type', 'application/json');
 			res.writeHead(200);
@@ -104,13 +104,13 @@
 		websocket ? websocket.clients.forEach(async (client) =>
 				client.send(JSON.stringify(data))) : null;
 
-	const ws_handler = async (client) => {
+	const ws_handler = async (client, req) => {
 
-		// console.log(`${client.host} connected`);
+		let key = req.headers['sec-websocket-key'];
 
-		broadcast({
-				"log": "new client"
-		});
+		console.log(`${key} connected`);
+
+		broadcast({ log: "new client" });
 
 		client.on("message", async (message) => {
 				// console.log(`${client.host} -> ${message}`);
@@ -126,11 +126,11 @@
 		});
 
 		client.on("disconnect", async () => {
-				// console.log(`${client.host} disconnected`);
+				console.log(`${key} disconnected`);
 		});
 
 		client.on("close", async (client) => {
-				// console.log(`${client.host} unhandled close`);
+				console.log(`${key} unhandled close`);
 		});
 	}
 	
@@ -140,7 +140,6 @@
 	server = http.createServer({}, app);
 	server.listen(port, host, async () => {
 		console.log(`\nsmart home started at ${host}:${port}`);
-		//_bridge2(host, 8885);
 	});
 
 	websocket = new WebSocket.Server({
