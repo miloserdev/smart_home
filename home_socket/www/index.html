@@ -1,1 +1,27 @@
+<style>html,body{background-color: #161616;}</style>
+
+<script>
+    const process = (data) => console.log( JSON.parse(data.data) );
+    const init_websock = () => {
+
+        websock = new WebSocket(`ws://${location.hostname}:8093`);
+
+        websock.onopen = () => {
+                console.log('websocket connected');
+        };
+
+        websock.onerror = () => websock.close();
+
+        websock.onmessage = process;
+
+        websock.onclose = () => {
+                console.log("websocket closed, reconnecting");
+                setTimeout(() => init_websock(), 2000);
+        }
+    }
+
+init_websock();
+
+</script>
+
 <h1>Smart Home</h1>

@@ -10,6 +10,12 @@
 	const port = 8092;
 	const home = "./www/";
 
+
+	const WebSocket = require("ws");
+	var websocket = null;
+
+
+
 	const not_found = async (res, json = false) =>
 		json ? res.setHeader('Content-Type', 'application/json')
 		.end(JSON.stringify({
@@ -18,10 +24,7 @@
 		res.writeHead(404).end("not found");
 
 
-	const gates = [
-		{ id: "gateway_1", host: host, port: 8884 },
-		{ id: "gateway_2", host: host, port: 8885 },
-	];
+	const gates = require("./gates.json");
 
 	app.route("/*", { method: "GET" }, (req, res, next) => {
 		//res.setHeader('Content-Type', 'application/json');
@@ -93,7 +96,43 @@
 		}
 		
 		next();
-	})
+	});
+
+
+
+	const broadcast = (data) =>
+		websocket ? websocket.clients.forEach(async (client) =>
+				client.send(JSON.stringify(data))) : null;
+
+	const ws_handler = async (client) => {
+
+		// console.log(`${client.host} connected`);
+
+		broadcast({
+				"log": "new client"
+		});
+
+		client.on("message", async (message) => {
+				// console.log(`${client.host} -> ${message}`);
+
+				var data = JSON.parse(await message);
+
+				let _ret = await process(data);
+				_ret["command"] ? null : _ret["command"] = data["command"];
+				_ret["device"] ? null : _ret["device"] = data["device"];
+				_ret["item"] ? null : _ret["item"] = data["item"];
+
+				broadcast(_ret);
+		});
+
+		client.on("disconnect", async () => {
+				// console.log(`${client.host} disconnected`);
+		});
+
+		client.on("close", async (client) => {
+				// console.log(`${client.host} unhandled close`);
+		});
+	}
 	
 	
 
@@ -103,5 +142,14 @@
 		console.log(`\nsmart home started at ${host}:${port}`);
 		//_bridge2(host, 8885);
 	});
+
+	websocket = new WebSocket.Server({
+		port: 8093
+	}, () => websocket.on("connection", ws_handler));
+
+	setInterval(() => {
+		broadcast({ packet: "HEARTBEAT" });
+	}, 1000);
+
 	
 })();

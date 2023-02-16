@@ -1,0 +1,4 @@
+[
+  { "id": "gateway_1", "host": "localhost", "port": 8884 },
+  { "id": "gateway_2", "host": "localhost", "port": 8885 }
+]
