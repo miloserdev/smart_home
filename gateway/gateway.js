@@ -1,18 +1,4 @@
-let devices = [
-	{"id":0,"name":"root","type":"bridge","ip":"localhost","port":8092,"items":[
-		{"id":"door1","type":"phantom"},
-		{"id":"door2","type":"phantom"},
-		{"id":"intercom_1","type":"phantom stream"}]},
-		{"id":2,"name":"esp01_relay","type":"switch","ip":"192.168.1.101","port":8081,"items":[
-			{"id":0,"turn_on":[{"relay":0}],"turn_off":[{"relay":1}],"status":[{"relay":"state"}]}
-		]},
-		{"id":1,"name":"relay_array_1","type":"switch","ip":"192.168.1.65","port":8081,"items":[
-			{"id":32,"turn_on":[{"digitalWrite":{"pin":32,"value":0}}],"turn_off":[{"digitalWrite":{"pin":32,"value":1}}],"status":[{"digitalRead":{"pin":32}}]},
-			{"id":33,"turn_on":[{"digitalWrite":{"pin":33,"value":0}}],"turn_off":[{"digitalWrite":{"pin":33,"value":1}}],"status":[{"digitalRead":{"pin":33}}]},
-			{"id":25,"turn_on":[{"digitalWrite":{"pin":25,"value":0}}],"turn_off":[{"digitalWrite":{"pin":25,"value":1}}],"status":[{"digitalRead":{"pin":25}}]},
-			{"id":26,"turn_on":[{"digitalWrite":{"pin":26,"value":0}}],"turn_off":[{"digitalWrite":{"pin":26,"value":1}}],"status":[{"digitalRead":{"pin":26}}]}
-		]}
-	]
+let devices = require("./devices.json");
 	
 	const send_json = async (res, data) => {
 		res.setHeader('Content-Type', 'application/json');

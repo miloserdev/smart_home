@@ -1,4 +1,6 @@
 ( main = async () => {
+
+	const fs = require("fs");
 	
 	const Xross = require("xross");
 	const app = Xross({ body_parser: true, debug: true });
@@ -6,7 +8,15 @@
 	const http = require("http");
 	const host = "localhost";
 	const port = 8092;
-	
+	const home = "./www/";
+
+	const not_found = async (res, json = false) =>
+		json ? res.setHeader('Content-Type', 'application/json')
+		.end(JSON.stringify({
+				"error": "404"
+		})) :
+		res.writeHead(404).end("not found");
+
 
 	const gates = [
 		{ id: "gateway_1", host: host, port: 8884 },
@@ -19,8 +29,15 @@
     	res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
 		res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 		res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-		res.writeHead(200);
-		res.end( JSON.stringify({ response: 200 }) );
+		
+		let href = req.url == "/" ? "index.html" : req.url;
+		let dirs = home + href;
+		console.log("AAAAAAAAA", dirs, req.url);
+		fs.readFile(dirs, async (err, fd) =>
+				err ? await not_found(res) : res.writeHead(200).end(fd))
+		
+
+		//res.end( JSON.stringify({ response: 200 }) );
 		next();
 	})
 	
