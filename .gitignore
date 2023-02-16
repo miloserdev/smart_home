@@ -1,0 +1,5 @@
+commit.sh
+gateway/node_modules
+gateway/package-lock.json
+home_socket/node_modules
+home_socket/package-lock.json

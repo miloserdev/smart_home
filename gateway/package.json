@@ -1,0 +1,18 @@
+{
+  "name": "esp_smart_home",
+  "version": "1.0.0",
+  "description": "Smart Home Application",
+  "main": "gateway.js",
+  "scripts": {
+    "test": "nodemon --ignore ./data --experimental-fetch gateway.js"
+  },
+  "author": "Miloserdev",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "lowdb": "^1.0.0",
+    "node-fetch": "^3.3.0",
+    "tinydb": "^0.1.0",
+    "ws": "^8.12.0",
+    "xross": "^1.0.0-2"
+  }
+}
